@@ -2,4 +2,5 @@
 <resources>
     <item name="list_item_forecast_textview" type="id">test</item>
     <item name="action_refresh" type="id">action_refresh</item>
+    <item name="detail_text" type="id" />
 </resources>
