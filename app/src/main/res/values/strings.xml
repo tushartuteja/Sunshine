@@ -5,4 +5,10 @@
     <string name="action_refresh">refresh</string>
     <string name="title_activity_detail">DetailActivity</string>
     <string name="detail_text">dummy</string>
+    <string name="pref_units_metric">metric</string>
+    <string name="pref_units_key">temperature</string>
+    <string name="pref_units_label">temperature</string>
+    <string name="pref_units_imperial">imperial</string>
+    <string name="action_map">Map</string>
+    <string name="action_share">Share</string>
 </resources>
