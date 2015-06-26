@@ -15,10 +15,43 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e("MainActivityTest","onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
 
+    @Override
+    protected void onPause() {
+        Log.e("MainActivityTest","onPause");
+
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.e("MainActivityTest","onStop");
+
+        super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.e("MainActivityTest","onResume");
+        super.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        Log.e("MainActivityTest","onStart");
+        super.onStart();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.e("MainActivityTest","onDestroy");
+
+        super.onDestroy();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
