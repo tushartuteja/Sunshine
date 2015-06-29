@@ -32,6 +32,10 @@
             android:parentActivityName=".MainActivity" >
 
         </activity>
+        
+        <provider
+            android:authorities="com.example.tushartuteja.sunshine.app"
+            android:name=".data.WeatherProvider" />
     </application>
 
 </manifest>
