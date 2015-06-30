@@ -113,7 +113,7 @@ public class TestProvider extends AndroidTestCase {
         cursor = mContext.getContentResolver().query(WeatherContract.LocationEntry.buildLocationUri(locationRowEntry), null, null, null, null);
 
         if (cursor.moveToFirst()){
-           validateCursor(locationContentValues,cursor);
+           validateCursor(locationContentValues, cursor);
 
             ContentValues weatherContentValues = getWeatherContentValues(locationRowEntry);
 
