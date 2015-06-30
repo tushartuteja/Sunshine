@@ -3,18 +3,21 @@ package com.example.tushartuteja.sunshine.app;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
 import com.example.tushartuteja.sunshine.app.data.WeatherContract;
 import com.example.tushartuteja.sunshine.app.data.WeatherDbHelper;
 
+import java.util.Map;
+import java.util.Set;
+
 /**
  * Created by tushartuteja on 26/06/15.
  */
 public class TestDb extends AndroidTestCase {
     public static final String LOG_TAG ="TEST-DB";
+    public static String cityName = "North Pole";
 
 
     public void testCreateDb() throws Throwable{
@@ -24,61 +27,95 @@ public class TestDb extends AndroidTestCase {
         db.close();
     }
 
-    public void testInsertReadDb(){
-        String testName = "North Pole";
+    public ContentValues getLocationContentValues(){
         String testLocationSetting = "99705";
         Double testLatitude = 64.772;
         Double testLongitude = -147.355;
 
-        WeatherDbHelper weatherDbHelper = new WeatherDbHelper(mContext);
-        SQLiteDatabase db = weatherDbHelper.getWritableDatabase();
-
         ContentValues contentValues = new ContentValues();
-        contentValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, testName);
+        contentValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, cityName);
         contentValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, testLocationSetting);
         contentValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, testLatitude);
         contentValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, testLongitude);
+        return contentValues;
 
-        long locationRowEntry = db.insert(WeatherContract.LocationEntry.TABLE_NAME,null, contentValues);
+    }
+
+    public ContentValues getWeatherContentValues(long locationRowId){
+        ContentValues weatherValues = new ContentValues();
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOC_KEY, locationRowId);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATETEXT, "20141205");
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DEGREES, 1.1);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_HUMIDITY, 1.2);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_PRESSURE, 1.3);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WIND_SPEED, 1.4);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP, 1.5);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP, 1.6);
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC, "Asteroids");
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, 321);
+        return weatherValues;
+    }
+    public static void validateCursor(ContentValues values, Cursor valueCursor){
+
+        Set<Map.Entry<String, Object>> valueSet = values.valueSet();
+
+        for(Map.Entry<String, Object> entry: valueSet){
+
+            String columnName = entry.getKey();
+            int idx = valueCursor.getColumnIndex(columnName);
+
+
+
+            String expectedValue = entry.getValue().toString();
+
+
+            assertFalse(-1 == idx);
+            assertEquals(expectedValue, valueCursor.getString(idx));
+
+
+
+        }
+
+    }
+
+
+    public void testInsertReadDb(){
+
+
+        WeatherDbHelper weatherDbHelper = new WeatherDbHelper(mContext);
+        SQLiteDatabase db = weatherDbHelper.getWritableDatabase();
+
+        ContentValues locationContentValues = getLocationContentValues();
+
+
+        long locationRowEntry = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, locationContentValues);
 
         assertTrue(locationRowEntry != -1);
 
         Log.d(LOG_TAG, "Insert Row Db: " + locationRowEntry);
 
 
-        String[] columns = {
-                WeatherContract.LocationEntry._ID,
-                WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING,
-                WeatherContract.LocationEntry.COLUMN_CITY_NAME,
-                WeatherContract.LocationEntry.COLUMN_COORD_LAT,
-                WeatherContract.LocationEntry.COLUMN_COORD_LONG
-
-        };
 
 
-        Cursor cursor = db.query(WeatherContract.LocationEntry.TABLE_NAME, columns,null,null,null,null,null);
+        Cursor locationCursor = db.query(WeatherContract.LocationEntry.TABLE_NAME, null,null,null,null,null,null);
 
-        if (cursor.moveToFirst()){
-            int locationIndex = cursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING);
-            String location = cursor.getString(locationIndex);
+        if (locationCursor.moveToFirst()){
+            validateCursor(locationContentValues, locationCursor);
 
-            int latIndex = cursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_COORD_LAT);
-            double latitude = cursor.getDouble(latIndex);
+            ContentValues weatherContentValues = getWeatherContentValues(locationRowEntry);
 
-            int longIndex = cursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_COORD_LONG);
-            double longitude = cursor.getDouble(longIndex);
 
-            int nameIndex = cursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_CITY_NAME);
-            String name = cursor.getString(nameIndex);
+            long weatherRowId = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, weatherContentValues);
+            assertTrue(weatherRowId != -1);
 
-            assertEquals(location, testLocationSetting);
-            assertEquals(testName, name);
-            assertEquals(testLatitude, latitude);
-            assertEquals(testLongitude, longitude);
+            Cursor weatherCursor = db.query(WeatherContract.WeatherEntry.TABLE_NAME, null,null,null,null,null,null);
+            weatherCursor.moveToFirst();
+            validateCursor(weatherContentValues, weatherCursor);
 
 
         }else{
             fail("No values returned");
         }
+
     }
 }
