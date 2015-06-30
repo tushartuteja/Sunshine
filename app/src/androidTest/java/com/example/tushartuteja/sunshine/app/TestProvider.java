@@ -17,7 +17,9 @@ import java.util.Set;
  */
 public class TestProvider extends AndroidTestCase {
     public static final String LOG_TAG ="TEST-PROVIDER";
-    public static String cityName = "North Pole";
+    public static String TEST_CITY_NAME = "North Pole";
+    public static String TEST_LOCATION = "99705";
+    public static String TEST_DATE = "20141205";
 
 
     public void testDeleteDb() throws Throwable{
@@ -31,8 +33,8 @@ public class TestProvider extends AndroidTestCase {
         Double testLongitude = -147.355;
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, cityName);
-        contentValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, testLocationSetting);
+        contentValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, TEST_CITY_NAME);
+        contentValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, TEST_LOCATION);
         contentValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, testLatitude);
         contentValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, testLongitude);
         return contentValues;
@@ -42,7 +44,7 @@ public class TestProvider extends AndroidTestCase {
     public ContentValues getWeatherContentValues(long locationRowId){
         ContentValues weatherValues = new ContentValues();
         weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOC_KEY, locationRowId);
-        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATETEXT, "20141205");
+        weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATETEXT, TEST_DATE);
         weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DEGREES, 1.1);
         weatherValues.put(WeatherContract.WeatherEntry.COLUMN_HUMIDITY, 1.2);
         weatherValues.put(WeatherContract.WeatherEntry.COLUMN_PRESSURE, 1.3);
@@ -113,6 +115,30 @@ public class TestProvider extends AndroidTestCase {
         if (cursor.moveToFirst()){
            validateCursor(locationContentValues,cursor);
 
+            ContentValues weatherContentValues = getWeatherContentValues(locationRowEntry);
+
+
+            long weatherRowId = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, weatherContentValues);
+            assertTrue(weatherRowId != -1);
+
+            Cursor weatherCursor = mContext.getContentResolver().query(WeatherContract.WeatherEntry.CONTENT_URI, null,null,null,null);
+            weatherCursor.moveToFirst();
+            validateCursor(weatherContentValues, weatherCursor);
+            weatherCursor.close();
+
+
+            weatherCursor = mContext.getContentResolver().query(WeatherContract.WeatherEntry.buildWeatherLocation(TEST_LOCATION), null,null,null,null);
+            weatherCursor.moveToFirst();
+            validateCursor(weatherContentValues, weatherCursor);
+            weatherCursor.close();
+
+
+            weatherCursor = mContext.getContentResolver().query(WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(TEST_LOCATION, TEST_DATE), null,null,null,null);
+            weatherCursor.moveToFirst();
+            validateCursor(weatherContentValues, weatherCursor);
+            weatherCursor.close();
+
+
 
         }else{
             fail("No values returned");
@@ -120,15 +146,7 @@ public class TestProvider extends AndroidTestCase {
 
 
 
-        ContentValues weatherContentValues = getWeatherContentValues(locationRowEntry);
 
-
-        long weatherRowId = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, weatherContentValues);
-        assertTrue(weatherRowId != -1);
-
-        Cursor weatherCursor = mContext.getContentResolver().query(WeatherContract.WeatherEntry.CONTENT_URI, null,null,null,null);
-        weatherCursor.moveToFirst();
-        validateCursor(weatherContentValues, weatherCursor);
 
 
 
