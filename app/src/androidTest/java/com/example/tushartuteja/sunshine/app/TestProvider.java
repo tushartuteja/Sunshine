@@ -21,7 +21,7 @@ public class TestProvider extends AndroidTestCase {
 
     }
 
-    public void testInsertReadDb(){
+    public void testInsertReadProvider(){
         String testName = "North Pole";
         String testLocationSetting = "99705";
         Double testLatitude = 64.772;
@@ -53,7 +53,32 @@ public class TestProvider extends AndroidTestCase {
         };
 
 
-        Cursor cursor = db.query(WeatherContract.LocationEntry.TABLE_NAME, columns,null,null,null,null,null);
+        Cursor cursor = mContext.getContentResolver().query(WeatherContract.LocationEntry.CONTENT_URI, null,null,null,null);
+
+        if (cursor.moveToFirst()){
+            int locationIndex = cursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING);
+            String location = cursor.getString(locationIndex);
+
+            int latIndex = cursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_COORD_LAT);
+            double latitude = cursor.getDouble(latIndex);
+
+            int longIndex = cursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_COORD_LONG);
+            double longitude = cursor.getDouble(longIndex);
+
+            int nameIndex = cursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_CITY_NAME);
+            String name = cursor.getString(nameIndex);
+
+            assertEquals(location, testLocationSetting);
+            assertEquals(testName, name);
+            assertEquals(testLatitude, latitude);
+            assertEquals(testLongitude, longitude);
+
+
+        }else{
+            fail("No values returned");
+        }
+
+        cursor = mContext.getContentResolver().query(WeatherContract.LocationEntry.buildLocationUri(locationRowEntry), null, null, null, null);
 
         if (cursor.moveToFirst()){
             int locationIndex = cursor.getColumnIndex(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING);
