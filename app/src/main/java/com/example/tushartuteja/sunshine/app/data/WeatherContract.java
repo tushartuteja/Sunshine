@@ -4,6 +4,9 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by tushartuteja on 26/06/15.
  */
@@ -77,5 +80,13 @@ public class WeatherContract  {
 
     }
 
+
+    public static final String dateFormat = "yyyyMMdd";
+
+
+    public static String getDbDateString(Date date){
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        return sdf.format(date);
+    }
 
 }

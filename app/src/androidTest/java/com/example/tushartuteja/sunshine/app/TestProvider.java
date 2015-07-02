@@ -1,8 +1,10 @@
 package com.example.tushartuteja.sunshine.app;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
@@ -22,8 +24,9 @@ public class TestProvider extends AndroidTestCase {
     public static String TEST_DATE = "20141205";
 
 
-    public void testDeleteDb() throws Throwable{
-        mContext.deleteDatabase(WeatherDbHelper.DATABASE_NAME);
+    public void testDeleteAllRecords() throws Throwable{
+        mContext.getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI, null,null);
+        mContext.getContentResolver().delete(WeatherContract.LocationEntry.CONTENT_URI, null, null);
 
     }
 
@@ -87,8 +90,8 @@ public class TestProvider extends AndroidTestCase {
         ContentValues locationContentValues = getLocationContentValues();
 
 
-        long locationRowEntry = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, locationContentValues);
-
+        Uri locationUri = mContext.getContentResolver().insert(WeatherContract.LocationEntry.CONTENT_URI, locationContentValues);
+        long locationRowEntry = ContentUris.parseId(locationUri);
         assertTrue(locationRowEntry != -1);
 
         Log.d(LOG_TAG, "Insert Row Db: " + locationRowEntry);
@@ -118,7 +121,8 @@ public class TestProvider extends AndroidTestCase {
             ContentValues weatherContentValues = getWeatherContentValues(locationRowEntry);
 
 
-            long weatherRowId = db.insert(WeatherContract.WeatherEntry.TABLE_NAME, null, weatherContentValues);
+            Uri weatherUri = mContext.getContentResolver().insert(WeatherContract.WeatherEntry.CONTENT_URI, weatherContentValues);
+            long weatherRowId = ContentUris.parseId(weatherUri);
             assertTrue(weatherRowId != -1);
 
             Cursor weatherCursor = mContext.getContentResolver().query(WeatherContract.WeatherEntry.CONTENT_URI, null,null,null,null);
@@ -138,6 +142,10 @@ public class TestProvider extends AndroidTestCase {
             validateCursor(weatherContentValues, weatherCursor);
             weatherCursor.close();
 
+            weatherCursor = mContext.getContentResolver().query(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(TEST_LOCATION, TEST_DATE), null,null,null,null);
+            weatherCursor.moveToFirst();
+            validateCursor(weatherContentValues, weatherCursor);
+            weatherCursor.close();
 
 
         }else{
@@ -171,5 +179,22 @@ public class TestProvider extends AndroidTestCase {
         type = mContext.getContentResolver( ).getType(WeatherContract.LocationEntry.buildLocationUri(1L));
         assertEquals(WeatherContract.LocationEntry.CONTENT_ITEM_TYPE, type);
 
+    }
+
+    public void testUpdateLocation() throws Throwable {
+        testDeleteAllRecords();
+        ContentValues values = getLocationContentValues();
+        Uri locationUri = mContext.getContentResolver().insert(WeatherContract.LocationEntry.CONTENT_URI, values);
+        long locationRowId = ContentUris.parseId(locationUri);
+
+        assertTrue(locationRowId != -1);
+
+        ContentValues values2 = new ContentValues(values);
+
+        values2.put(WeatherContract.LocationEntry._ID, locationRowId);
+        values2.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, "Tushar Tuteja");
+
+        int count = mContext.getContentResolver().update(WeatherContract.LocationEntry.CONTENT_URI, values2, WeatherContract.LocationEntry._ID + " = ?", new String[]{Long.toString(locationRowId)});
+        assertTrue(count == 1);
     }
 }
