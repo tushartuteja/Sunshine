@@ -2,46 +2,62 @@
 
 <LinearLayout
     android:orientation="horizontal"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:padding="16dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:src="@mipmap/ic_launcher" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="match_parent" android:layout_gravity="center" android:gravity="center"
+
+        android:layout_weight="1">
+
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_item_date_textview"
+            android:text="Todays Date"/>
+
+
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_item_forecast_textview"
+            android:text="Tushar Date"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/list_item_date_textview" />
+        android:layout_gravity="right"
+        android:gravity="center"
+       >
 
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text=" - " />
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_item_high_textview"
+            android:text="test"
+            />
 
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/list_item_forecast_textview" />
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/list_item_low_textview" android:text="test3" />
 
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text=" - " />
-
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/list_item_high_textview" />
-
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:text="/" />
-
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:id="@+id/list_item_low_textview" />
-
+    </LinearLayout>
 </LinearLayout>

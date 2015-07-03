@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.tushartuteja.sunshine.app.data.WeatherContract;
 
@@ -117,6 +118,28 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 0
         );
 
+        mForecastAdapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
+            @Override
+            public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+                boolean isMetric = Utility.isMetric(getActivity());
+                switch (columnIndex) {
+                    case COL_WEATHER_MAX_TEMP:
+                    case COL_WEATHER_MIN_TEMP: {
+                        // we have to do some formatting and possibly a conversion
+                        ((TextView) view).setText(Utility.formatTemperature(
+                                cursor.getDouble(columnIndex), isMetric));
+                        return true;
+                    }
+                    case COL_WEATHER_DATE: {
+                        String dateString = cursor.getString(columnIndex);
+                        TextView dateView = (TextView) view;
+                        dateView.setText(Utility.formatDate(dateString));
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -127,9 +150,26 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Intent intent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, "placeholder");
-                startActivity(intent);
+               SimpleCursorAdapter adapter = (SimpleCursorAdapter) adapterView.getAdapter();
+                Cursor cursor = adapter.getCursor();
+                String forcast = "";
+                if (null != cursor && cursor.moveToPosition(position)){
+                    boolean isMetric = Utility.isMetric(getActivity());
+                    forcast = String.format("%s - %s - %s/%s",
+                    Utility.formatDate(cursor.getString(COL_WEATHER_DATE)),
+                            cursor.getString(COL_WEATHER_DESC),
+                            Utility.formatTemperature(cursor.getDouble(COL_WEATHER_MAX_TEMP), isMetric),
+                            Utility.formatTemperature(cursor.getDouble(COL_WEATHER_MIN_TEMP), isMetric));
+
+
+                    Intent intent = new Intent(getActivity(), DetailActivity.class)
+                            .putExtra(Intent.EXTRA_TEXT, cursor.getString(COL_WEATHER_DATE));
+                    startActivity(intent);
+
+                }
+
+
+
             }
         });
 
