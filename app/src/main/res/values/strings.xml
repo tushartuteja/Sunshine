@@ -11,4 +11,7 @@
     <string name="pref_units_imperial">imperial</string>
     <string name="action_map">Map</string>
     <string name="action_share">Share</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="format_full_friendly_date" />
 </resources>
