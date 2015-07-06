@@ -44,6 +44,14 @@ public class MainActivity extends ActionBarActivity {
             openPreferredLocationInMap();
             return true;
         }
+        if (id == R.id.progress_bar) {
+            startActivity(new Intent(this, ProgressTestActivity.class));
+            return true;
+        }
+        if (id == R.id.async_task) {
+            startActivity(new Intent(this, ReadWebpageAsyncTask.class));
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 

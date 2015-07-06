@@ -30,12 +30,20 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".MainActivity" >
-
         </activity>
-        
+
         <provider
-            android:authorities="com.example.tushartuteja.sunshine.app"
-            android:name=".data.WeatherProvider" />
+            android:name=".data.WeatherProvider"
+            android:authorities="com.example.tushartuteja.sunshine.app" />
+
+        <activity
+            android:name=".ProgressTestActivity"
+            android:label="@string/title_activity_progress_test" >
+        </activity>
+        <activity
+            android:name=".ReadWebpageAsyncTask"
+            android:label="@string/title_activity_read_webpage_async_task" >
+        </activity>
     </application>
 
 </manifest>
